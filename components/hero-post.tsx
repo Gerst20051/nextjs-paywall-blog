@@ -2,12 +2,14 @@ import Avatar from './avatar'
 import DateFormatter from './date-formatter'
 import CoverImage from './cover-image'
 import Link from 'next/link'
+import { SHIELD_IMAGE } from '../lib/constants'
 import Author from '../types/author'
 
 type Props = {
   title: string
   coverImage: string
   date: string
+  premium: boolean
   excerpt: string
   author: Author
   slug: string
@@ -17,6 +19,7 @@ const HeroPost = ({
   title,
   coverImage,
   date,
+  premium,
   excerpt,
   author,
   slug,
@@ -30,7 +33,10 @@ const HeroPost = ({
         <div>
           <h3 className="mb-4 text-4xl lg:text-6xl leading-tight">
             <Link as={`/posts/${slug}`} href="/posts/[slug]">
-              <a className="hover:underline">{title}</a>
+              <a className="hover:underline" style={{ alignItems: 'center', display: 'flex' }}>
+                {premium && <img src={SHIELD_IMAGE} className="w-12 h-12 mr-4" alt="Premium Post" style={{ float: 'left' }} />}
+                {title}
+              </a>
             </Link>
           </h3>
           <div className="mb-4 md:mb-0 text-lg">
