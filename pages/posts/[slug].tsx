@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
+import { useEffect, useState } from 'react'
 import Container from '../../components/container'
 import PostBody from '../../components/post-body'
 import Header from '../../components/header'
@@ -19,15 +20,26 @@ type Props = {
 }
 
 const Post = ({ post, morePosts, preview }: Props) => {
+  const [loggedIn, setLoggedIn] = useState()
   const router = useRouter()
+
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
   }
+
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('loggedIn') === 'true'
+    setLoggedIn(loggedIn)
+    if (post.premium && loggedIn !== true) {
+      router.push('/login')
+    }
+  }, [])
+
   return (
     <Layout preview={preview}>
       <Container>
         <Header />
-        {router.isFallback ? (
+        {router.isFallback || loggedIn === undefined ? (
           <PostTitle>Loading…</PostTitle>
         ) : (
           <>
@@ -42,6 +54,7 @@ const Post = ({ post, morePosts, preview }: Props) => {
                 title={post.title}
                 coverImage={post.coverImage}
                 date={post.date}
+                premium={post.premium}
                 author={post.author}
               />
               <PostBody content={post.content} />
@@ -65,6 +78,7 @@ export async function getStaticProps({ params }: Params) {
   const post = getPostBySlug(params.slug, [
     'title',
     'date',
+    'premium',
     'slug',
     'author',
     'content',
